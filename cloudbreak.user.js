@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CloudBreaker
 // @namespace    https://scratch.mit.edu
-// @version      0.4  
+// @version      0.4
 // @description  Edit cloud variables on Scratch
 // @author       Hampton Moore
 // @license      GPL-2
@@ -28,7 +28,10 @@ window.cloud.edit = function (variName) {
 
 window.Function.prototype.bind = function (...args) {
     if (args[0] && args[0].hasOwnProperty("editingTarget") && args[0].hasOwnProperty("runtime")) {
+        if (window.ScratchVM) return;
+
         window.ScratchVM = args[0];
+        window.ScratchVM.on('targetsUpdate', init);
     }
 
     return functionBind.apply(this, args);
@@ -53,20 +56,19 @@ function registerVariable(vari) {
 function snagVariables() {
     let targetStage = window.ScratchVM.runtime.getTargetForStage();
     window.cloud.stage = targetStage;
-    if (window.ScratchVM.runtime.hasCloudData()) {
-        const varis = Object.values(targetStage.variables);
 
-        for (let vari of varis) {
-            if (vari.isCloud) {
-                registerVariable(vari);
-            }
+    const varis = Object.values(targetStage.variables);
+
+    for (let vari of varis) {
+        if (vari.isCloud) {
+            registerVariable(vari);
         }
-    } else {
-        console.log("No cloud variables smh");
     }
 }
-(function(){
-    window.addEventListener('pageshow', event => {
-        window.ScratchVM.once('targetsUpdate', snagVariables);
-    });
-})()
+
+function init() {
+    if (!window.ScratchVM.runtime.hasCloudData()) return;
+
+    window.ScratchVM.removeListener('targetsUpdate', init);
+    snagVariables();
+}
