@@ -51,23 +51,21 @@ function registerVariable(vari) {
 }
 
 function snagVariables() {
-    let targetStage = window.ScratchVM.runtime.getTargetForStage();
-    if (targetStage == undefined) {
-        setTimeout(snagVariables, 1000);
-    } else {
-        window.cloud.stage = targetStage;
-        if (window.ScratchVM.runtime.hasCloudData()) {
-            const varis = Object.values(targetStage.variables);
+    window.cloud.stage = targetStage;
+    if (window.ScratchVM.runtime.hasCloudData()) {
+        const varis = Object.values(targetStage.variables);
 
-            for (let vari of varis) {
-                if (vari.isCloud) {
-                    registerVariable(vari);
-                }
+        for (let vari of varis) {
+            if (vari.isCloud) {
+                registerVariable(vari);
             }
-        } else {
-            console.log("No cloud variables smh");
         }
+    } else {
+        console.log("No cloud variables smh");
     }
 }
-
-setTimeout(snagVariables, 1000);
+(function(){
+    window.addEventListener('pageshow', event => {
+        window.ScratchVM.once('targetsUpdate', snagVariables);
+    });
+})()
