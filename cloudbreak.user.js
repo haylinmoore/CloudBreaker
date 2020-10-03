@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CloudBreaker
 // @namespace    https://scratch.mit.edu
-// @version      0.4
+// @version      0.5
 // @description  Edit cloud variables on Scratch
 // @author       Hampton Moore
 // @license      GPL-2
