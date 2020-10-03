@@ -51,6 +51,7 @@ function registerVariable(vari) {
 }
 
 function snagVariables() {
+    let targetStage = window.ScratchVM.runtime.getTargetForStage();
     window.cloud.stage = targetStage;
     if (window.ScratchVM.runtime.hasCloudData()) {
         const varis = Object.values(targetStage.variables);
