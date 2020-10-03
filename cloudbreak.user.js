@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CloudBreaker
 // @namespace    https://scratch.mit.edu
-// @version      0.3  
+// @version      0.4  
 // @description  Edit cloud variables on Scratch
 // @author       Hampton Moore
 // @license      GPL-2
@@ -14,11 +14,7 @@ const functionBind = Function.prototype.bind;
 
 window.cloud = {
     enabled: false,
-    con: null,
     vars: {},
-    stage: null,
-    user: null,
-    project_id: null
 }
 
 window.cloud.edit = function (variName) {
@@ -26,7 +22,8 @@ window.cloud.edit = function (variName) {
 
     let val = prompt(`What should the value of ${variName} be? It's currently ${currentVal}`);
 
-    window.cloud.send({ "method": "set", "user": window.cloud.user, "project_id": window.cloud.project_id, "name": variName, "value": val });
+    window.ScratchVM.runtime.ioDevices.cloud.requestUpdateVariable(variName, val);
+    window.ScratchVM.runtime.ioDevices.cloud.updateCloudVariable({ name: variName, value: val })
 }
 
 window.Function.prototype.bind = function (...args) {
@@ -36,20 +33,6 @@ window.Function.prototype.bind = function (...args) {
 
     return functionBind.apply(this, args);
 };
-
-function setupWebsocket() {
-    window.cloud.user = document.querySelector(".profile-name").textContent;
-    window.cloud.project_id = window.location.href.replace(/[^0-9]/g, '').toString();
-    window.cloud.con = new WebSocket("wss://clouddata.scratch.mit.edu/");
-
-    window.cloud.send = function (msg) {
-        window.cloud.con.send(JSON.stringify(msg) + "\n")
-    }
-
-    window.cloud.con.onopen = function (e) {
-        window.cloud.send({ "method": "handshake", "user": window.cloud.user, "project_id": window.cloud.project_id });
-    }
-}
 
 function registerVariable(vari) {
     console.log(`Registering Variable ${vari.name}`);
@@ -81,8 +64,6 @@ function snagVariables() {
                     registerVariable(vari);
                 }
             }
-
-            setupWebsocket();
         } else {
             console.log("No cloud variables smh");
         }
