@@ -10,6 +10,8 @@
 // @run-at document-start
 // ==/UserScript==
 
+// Hello!
+
 const functionBind = Function.prototype.bind;
 
 window.cloud = {
