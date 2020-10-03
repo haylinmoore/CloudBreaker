@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CloudBreaker
 // @namespace    https://scratch.mit.edu
-// @version      0.2
+// @version      0.3  
 // @description  Edit cloud variables on Scratch
 // @author       Hampton Moore
 // @license      GPL-2
@@ -32,10 +32,9 @@ window.cloud.edit = function (variName) {
 window.Function.prototype.bind = function (...args) {
     if (args[0] && args[0].hasOwnProperty("editingTarget") && args[0].hasOwnProperty("runtime")) {
         window.ScratchVM = args[0];
-        return functionBind.apply(this, args);
-    } else {
-        return functionBind.apply(this, args);
     }
+
+    return functionBind.apply(this, args);
 };
 
 function setupWebsocket() {
